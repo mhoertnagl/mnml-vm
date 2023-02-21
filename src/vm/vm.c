@@ -133,6 +133,22 @@ void vm_step(Vm *vm)
     break;
   }
 
+  case VM_INC:
+  {
+    const u16 a = vm_pop(vm);
+    vm_psh(vm, a + 1);
+    vm->pc++;
+    break;
+  }
+
+  case VM_DEC:
+  {
+    const u16 a = vm_pop(vm);
+    vm_psh(vm, a - 1);
+    vm->pc++;
+    break;
+  }
+
   case VM_ADD:
   {
     const u16 a = vm_pop(vm);
