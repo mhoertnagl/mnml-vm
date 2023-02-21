@@ -3,11 +3,37 @@
 #include "dev/dev.h"
 #include "utils/bits.h"
 
-extern inline u8 vm_pop8(Vm *vm);
-extern inline u16 vm_pop(Vm *vm);
-extern inline void vm_psh(Vm *vm, u16 v);
-extern inline u16 vm_ldw(Vm *vm, i16 a);
-extern inline void vm_stw(Vm *vm, i16 a, u16 v);
+u8 vm_pop8(Vm *vm)
+{
+  return vm->mem[--vm->sp];
+}
+
+u16 vm_pop(Vm *vm)
+{
+  const u8 h = vm->mem[--vm->sp];
+  const u8 l = vm->mem[--vm->sp];
+  return (h << 8) | l;
+}
+
+void vm_psh(Vm *vm, u16 v)
+{
+  vm->mem[vm->sp] = (v >> 8);
+  vm->mem[vm->sp + 1] = v;
+  vm->sp += 2;
+}
+
+u16 vm_ldw(Vm *vm, i16 a)
+{
+  const u8 h = vm->mem[vm->pc + a];
+  const u8 l = vm->mem[vm->pc + a + 1];
+  return (h << 8) | l;
+}
+
+void vm_stw(Vm *vm, i16 a, u16 v)
+{
+  vm->mem[vm->pc + a] = (v >> 8);
+  vm->mem[vm->pc + a + 1] = v;
+}
 
 void vm_boot(Vm *vm, u8 *mem)
 {
@@ -33,6 +59,14 @@ void vm_attach_device(Vm *vm, u8 addr, Device *dev)
   // }
   vm->dev[addr] = dev;
 }
+
+// void vm_run(Vm *vm)
+// {
+//   while (1)
+//   {
+//     vm_step(vm);
+//   }
+// }
 
 void vm_step(Vm *vm)
 {

@@ -8,8 +8,20 @@
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGTH 640
 
+typedef struct ScreenMemory
+{
+  u16 red;
+  u16 green;
+  u16 blue;
+  u16 alpha;
+  u16 x;
+  u16 y;
+} ScreenMemory;
+
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
+
+ScreenMemory mem;
 
 static u8 boot()
 {
@@ -56,23 +68,65 @@ static u16 read(u16 reg)
 
 static void write(u16 reg, u16 val)
 {
-  // TODO: Won't work anymore for 16bit vm.
   switch (reg)
   {
-  case SCREEN_COLOR:
+  case SCREEN_COLOR_RED:
   {
-    const u8 r = u8_hh(val);
-    const u8 g = u8_hl(val);
-    const u8 b = u8_lh(val);
-    const u8 a = u8_ll(val);
-    SDL_SetRenderDrawColor(renderer, r, g, b, a);
+    mem.red = val;
+    SDL_SetRenderDrawColor(
+        renderer,
+        mem.red,
+        mem.green,
+        mem.blue,
+        mem.alpha);
     break;
   }
-  case SCREEN_POSITION:
+  case SCREEN_COLOR_GREEN:
   {
-    const u16 x = u16_h(val);
-    const u16 y = u16_l(val);
-    SDL_RenderDrawPoint(renderer, x, y);
+    mem.green = val;
+    SDL_SetRenderDrawColor(
+        renderer,
+        mem.red,
+        mem.green,
+        mem.blue,
+        mem.alpha);
+    break;
+  }
+  case SCREEN_COLOR_BLUE:
+  {
+    mem.blue = val;
+    SDL_SetRenderDrawColor(
+        renderer,
+        mem.red,
+        mem.green,
+        mem.blue,
+        mem.alpha);
+    break;
+  }
+  case SCREEN_COLOR_ALPHA:
+  {
+    mem.alpha = val;
+    SDL_SetRenderDrawColor(
+        renderer,
+        mem.red,
+        mem.green,
+        mem.blue,
+        mem.alpha);
+    break;
+  }
+  case SCREEN_POSITION_X:
+  {
+    mem.x = val;
+    break;
+  }
+  case SCREEN_POSITION_Y:
+  {
+    mem.y = val;
+    break;
+  }
+  case SCREEN_DRAW:
+  {
+    SDL_RenderDrawPoint(renderer, mem.x, mem.y);
     break;
   }
   case SCREEN_RENDER:
@@ -83,9 +137,12 @@ static void write(u16 reg, u16 val)
   }
 }
 
+// clang-format off
 Device screen = {
-    .name = "dev/sdl/screen",
-    .boot = boot,
-    .halt = halt,
-    .read = read,
-    .write = write};
+  .name  = "dev/sdl/screen",
+  .boot  = boot,
+  .halt  = halt,
+  .read  = read,
+  .write = write
+};
+// clang-format on

@@ -60,36 +60,10 @@ typedef struct Vm
 } Vm;
 // clang-format off
 
-inline u8 vm_pop8(Vm *vm)
-{
-  return vm->mem[--vm->sp];
-}
+void vm_boot(Vm *vm, u8 *mem);
 
-inline u16 vm_pop(Vm *vm)
-{
-  const u8 h = vm->mem[--vm->sp];
-  const u8 l = vm->mem[--vm->sp];
-  return (h << 8) | l;
-}
+void vm_attach_device(Vm *vm, u8 addr, Device *dev);
 
-inline void vm_psh(Vm *vm, u16 v)
-{
-  vm->mem[vm->sp] = (v >> 8);
-  vm->mem[vm->sp + 1] = v;
-  vm->sp += 2;
-}
-
-inline u16 vm_ldw(Vm *vm, i16 a)
-{
-  const u8 h = vm->mem[vm->pc + a];
-  const u8 l = vm->mem[vm->pc + a + 1];
-  return (h << 8) | l;
-}
-
-inline void vm_stw(Vm *vm, i16 a, u16 v)
-{
-  vm->mem[vm->pc + a] = (v >> 8);
-  vm->mem[vm->pc + a + 1] = v;
-}
+void vm_step(Vm *vm);
 
 #endif
