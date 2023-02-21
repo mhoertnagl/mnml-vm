@@ -263,6 +263,26 @@ void vm_step(Vm *vm)
     break;
   }
 
+  case VM_SLE:
+  {
+    const u16 a = vm_pop(vm);
+    const u16 b = vm_pop(vm);
+    vm_psh(vm, b <= a);
+    // vm_psh(vm, b <= a ? 1 : 0);
+    vm->pc++;
+    break;
+  }
+
+  case VM_SGE:
+  {
+    const u16 a = vm_pop(vm);
+    const u16 b = vm_pop(vm);
+    vm_psh(vm, b >= a);
+    // vm_psh(vm, b >= a ? 1 : 0);
+    vm->pc++;
+    break;
+  }
+
   case VM_JMP:
   {
     const i16 a = vm_pop(vm);

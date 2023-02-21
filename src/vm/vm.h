@@ -37,18 +37,18 @@
 #define VM_NEQ 0x13 // (a b -- (b != a))
 #define VM_SLT 0x14 // (a b -- (b < a))
 #define VM_SGT 0x15 // (a b -- (b > a))
-// #define VM_SLE 0x00 // (a b -- (b <= a))
-// #define VM_SGE 0x00 // (a b -- (b >= a))
+#define VM_SLE 0x16 // (a b -- (b <= a))
+#define VM_SGE 0x17 // (a b -- (b >= a))
 
-#define VM_JMP 0x16 // (a -- ) pc += a
-#define VM_JAL 0x17 // (a -- (pc+1) a) pc += a
-#define VM_BRA 0x18 // (a b -- ) if b then pc += a
+#define VM_JMP 0x18 // (a -- ) pc += a
+#define VM_JAL 0x19 // (a -- (pc+1) a) pc += a
+#define VM_BRA 0x1a // (a b -- ) if b then pc += a
 
-#define VM_LDW 0x19 // (a r -- dev[a]->mem[r])
-#define VM_STW 0x1a // (a r b -- ) dev[a]->mem[r] = b
+#define VM_LDW 0x1b // (a r -- dev[a]->mem[r])
+#define VM_STW 0x1c // (a r b -- ) dev[a]->mem[r] = b
 
-#define VM_DRX 0x1b // (a b -- dev[b].read(a)) --------+
-#define VM_DTX 0x1c // (a b c -- ) dev[b].write(a, c) -+- Lower 4 bit could identify the device. This would allow for 15 devices in total.
+#define VM_DRX 0x1d // (a b -- dev[b].read(a)) --------+
+#define VM_DTX 0x1e // (a b c -- ) dev[b].write(a, c) -+- Lower 4 bit could identify the device. This would allow for 15 devices in total.
 
 // clang-format off
 typedef struct Vm
