@@ -15,7 +15,9 @@ INC = $(shell find $(SRC_DIR) -name '*.h')
 SRC = $(shell find $(SRC_DIR) -name '*.c')
 OBJ = $(patsubst %.c, %.o, $(SRC))
 
-all: $(OBJ)
+all: $(TARGET)
+
+$(TARGET): $(OBJ)
 	$(CC) $(CFLAGS) $(LIBS) $(DEPS) $^ -o $(OUT_DIR)/$@
 
 %.o: %.c $(INC)
