@@ -377,8 +377,7 @@ void vm_step(Vm *vm)
   {
     const u8 a = vm_pop8(vm);
     const u16 r = vm_pop(vm);
-    const Device *dev = vm->dev[a];
-    const u16 v = dev->read(dev->state, r);
+    const u16 v = dev_read(vm->dev[a], r);
     vm_psh(vm, v);
     break;
   }
@@ -388,8 +387,7 @@ void vm_step(Vm *vm)
     const u8 a = vm_pop8(vm);
     const u16 r = vm_pop(vm);
     const u16 v = vm_pop(vm);
-    const Device *dev = vm->dev[a];
-    dev->write(dev->state, r, v);
+    dev_write(vm->dev[a], r, v);
     break;
   }
 

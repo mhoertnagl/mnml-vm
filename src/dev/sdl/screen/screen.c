@@ -124,66 +124,22 @@ static void screen_write(Screen *screen, u16 reg, u16 val)
 }
 
 // clang-format off
-// Device screen_dev = {
-//   .name  = "dev/sdl/screen",
-//   .boot  = screen_boot,
-//   .halt  = screen_halt,
-//   .read  = screen_read,
-//   .write = screen_write
-// };
-// clang-format on
-
-// clang-format off
-Device *screen_create()
+Screen *screen_create()
 {
-  Screen *state   = malloc(sizeof(Screen));
-  state->window   = NULL;
-  state->renderer = NULL;
-  state->red      = 0;
-  state->green    = 0;
-  state->blue     = 0;
-  state->alpha    = 0;
-  state->x        = 0;
-  state->y        = 0;
-
-  Device *dev      = malloc(sizeof(Device));
-  dev->name        = "dev/sdl/screen";
-  dev->state       = state;
-  dev->boot        = screen_boot;
-  dev->halt        = screen_halt;
-  dev->read        = screen_read;
-  dev->write       = screen_write;
-
-  return dev;
+  Screen *screen     = malloc(sizeof(Screen));
+  screen->dev.name   = "dev/sdl/screen";
+  screen->dev.boot   = screen_boot;
+  screen->dev.halt   = screen_halt;
+  screen->dev.read   = screen_read;
+  screen->dev.write  = screen_write;
+  screen->window     = NULL;
+  screen->renderer   = NULL;
+  screen->red        = 0;
+  screen->green      = 0;
+  screen->blue       = 0;
+  screen->alpha      = 0;
+  screen->x          = 0;
+  screen->y          = 0;
+  return screen;
 }
 // clang-format on
-
-// // clang-format off
-// Screen screen = {
-//   .dev = {
-//     .name  = "dev/sdl/screen",
-//     .boot  = screen_boot,
-//     .halt  = screen_halt,
-//     .read  = screen_read,
-//     .write = screen_write
-//   },
-//   .window = NULL,
-//   .renderer = NULL,
-//   .red = 0,
-//   .green = 0,
-//   .blue = 0,
-//   .alpha = 0,
-//   .x = 0,
-//   .y = 0,
-// };
-// // clang-format on
-
-// // clang-format off
-// Device screen = {
-//   .name  = "dev/sdl/screen",
-//   .boot  = screen_boot,
-//   .halt  = screen_halt,
-//   .read  = screen_read,
-//   .write = screen_write
-// };
-// // clang-format on

@@ -18,6 +18,7 @@
 // clang-format off
 typedef struct Screen
 {
+  Device       dev;
   SDL_Window   *window;
   SDL_Renderer *renderer;
   u16          red;
@@ -33,8 +34,8 @@ typedef struct Screen
  * Creates a new screen with color and
  * coordinates initialized to zero.
  *
- * @returns Pointer to the screen Device.
+ * @returns Pointer to the Screen device.
  */
-extern Device *screen_create();
+extern Screen *screen_create();
 
 #endif
