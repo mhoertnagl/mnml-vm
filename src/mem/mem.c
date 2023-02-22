@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "mem/mem.h"
 
-cstr MEM_EXCEED = "WARN: File size [%d bytes] exceeds memory size [%d bytes].";
+cstr MEM_EXCEED = "WARN: File size [%d bytes] exceeds memory size [%d bytes].\n";
 
 Mem *mem_create(u32 size)
 {

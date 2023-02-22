@@ -384,7 +384,7 @@ void vm_step(Vm *vm)
   }
 
   default:
-    printf("ERROR: Unsupported operation [%x].", vm->mem[vm->pc]);
+    printf("ERROR: Unsupported operation [%x].\n", vm->mem[vm->pc]);
     vm->pc++;
     break;
   }
