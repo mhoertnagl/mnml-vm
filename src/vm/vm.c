@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include "vm.h"
 #include "dev/dev.h"
-#include "utils/bits.h"
 
 u8 vm_pop8(Vm *vm)
 {
@@ -378,7 +377,8 @@ void vm_step(Vm *vm)
   {
     const u8 a = vm_pop8(vm);
     const u16 r = vm_pop(vm);
-    const u16 v = vm->dev[a]->read(r);
+    const Device *dev = vm->dev[a];
+    const u16 v = dev->read(dev->state, r);
     vm_psh(vm, v);
     break;
   }
@@ -388,7 +388,8 @@ void vm_step(Vm *vm)
     const u8 a = vm_pop8(vm);
     const u16 r = vm_pop(vm);
     const u16 v = vm_pop(vm);
-    vm->dev[a]->write(r, v);
+    const Device *dev = vm->dev[a];
+    dev->write(dev->state, r, v);
     break;
   }
 

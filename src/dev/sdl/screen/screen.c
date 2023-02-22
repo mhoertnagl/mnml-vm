@@ -1,29 +1,12 @@
 #include <stdlib.h>
-#include <SDL2/SDL.h>
 #include "screen.h"
-#include "dev/dev.h"
-#include "utils/bits.h"
+// #include "dev/dev.h"
 
 #define WINDOW_TITLE "mnml VM v0.1"
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGTH 640
 
-typedef struct ScreenMemory
-{
-  u16 red;
-  u16 green;
-  u16 blue;
-  u16 alpha;
-  u16 x;
-  u16 y;
-} ScreenMemory;
-
-SDL_Window *window = NULL;
-SDL_Renderer *renderer = NULL;
-
-ScreenMemory mem;
-
-static u8 boot()
+static u8 screen_boot(Screen *screen)
 {
   // Attempt to initialize the SDL video subsystem.
   if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -39,8 +22,8 @@ static u8 boot()
       WINDOW_WIDTH,
       WINDOW_HEIGTH,
       0,
-      &window,
-      &renderer);
+      &screen->window,
+      &screen->renderer);
 
   if (status == -1)
   {
@@ -49,100 +32,158 @@ static u8 boot()
     return EXIT_FAILURE;
   }
 
-  SDL_SetWindowTitle(window, WINDOW_TITLE);
+  SDL_SetWindowTitle(screen->window, WINDOW_TITLE);
 
   return EXIT_SUCCESS;
 }
 
-static u8 halt()
+static u8 screen_halt(Screen *screen)
 {
-  SDL_DestroyRenderer(renderer);
-  SDL_DestroyWindow(window);
+  SDL_DestroyRenderer(screen->renderer);
+  SDL_DestroyWindow(screen->window);
   return EXIT_SUCCESS;
 }
 
-static u16 read(u16 reg)
+static u16 screen_read(Screen *screen, u16 reg)
 {
   return EXIT_SUCCESS;
 }
 
-static void write(u16 reg, u16 val)
+static void screen_write(Screen *screen, u16 reg, u16 val)
 {
   switch (reg)
   {
   case SCREEN_COLOR_RED:
   {
-    mem.red = val;
+    screen->red = val;
     SDL_SetRenderDrawColor(
-        renderer,
-        mem.red,
-        mem.green,
-        mem.blue,
-        mem.alpha);
+        screen->renderer,
+        screen->red,
+        screen->green,
+        screen->blue,
+        screen->alpha);
     break;
   }
   case SCREEN_COLOR_GREEN:
   {
-    mem.green = val;
+    screen->green = val;
     SDL_SetRenderDrawColor(
-        renderer,
-        mem.red,
-        mem.green,
-        mem.blue,
-        mem.alpha);
+        screen->renderer,
+        screen->red,
+        screen->green,
+        screen->blue,
+        screen->alpha);
     break;
   }
   case SCREEN_COLOR_BLUE:
   {
-    mem.blue = val;
+    screen->blue = val;
     SDL_SetRenderDrawColor(
-        renderer,
-        mem.red,
-        mem.green,
-        mem.blue,
-        mem.alpha);
+        screen->renderer,
+        screen->red,
+        screen->green,
+        screen->blue,
+        screen->alpha);
     break;
   }
   case SCREEN_COLOR_ALPHA:
   {
-    mem.alpha = val;
+    screen->alpha = val;
     SDL_SetRenderDrawColor(
-        renderer,
-        mem.red,
-        mem.green,
-        mem.blue,
-        mem.alpha);
+        screen->renderer,
+        screen->red,
+        screen->green,
+        screen->blue,
+        screen->alpha);
     break;
   }
   case SCREEN_POSITION_X:
   {
-    mem.x = val;
+    screen->x = val;
     break;
   }
   case SCREEN_POSITION_Y:
   {
-    mem.y = val;
+    screen->y = val;
     break;
   }
   case SCREEN_DRAW:
   {
-    SDL_RenderDrawPoint(renderer, mem.x, mem.y);
+    SDL_RenderDrawPoint(
+        screen->renderer,
+        screen->x,
+        screen->y);
     break;
   }
   case SCREEN_RENDER:
   {
-    SDL_RenderPresent(renderer);
+    SDL_RenderPresent(screen->renderer);
     break;
   }
   }
 }
 
 // clang-format off
-Device screen = {
-  .name  = "dev/sdl/screen",
-  .boot  = boot,
-  .halt  = halt,
-  .read  = read,
-  .write = write
-};
+// Device screen_dev = {
+//   .name  = "dev/sdl/screen",
+//   .boot  = screen_boot,
+//   .halt  = screen_halt,
+//   .read  = screen_read,
+//   .write = screen_write
+// };
 // clang-format on
+
+// clang-format off
+Device *screen_create()
+{
+  Screen *state   = malloc(sizeof(Screen));
+  state->window   = NULL;
+  state->renderer = NULL;
+  state->red      = 0;
+  state->green    = 0;
+  state->blue     = 0;
+  state->alpha    = 0;
+  state->x        = 0;
+  state->y        = 0;
+
+  Device *dev      = malloc(sizeof(Device));
+  dev->name        = "dev/sdl/screen";
+  dev->state       = state;
+  dev->boot        = screen_boot;
+  dev->halt        = screen_halt;
+  dev->read        = screen_read;
+  dev->write       = screen_write;
+
+  return dev;
+}
+// clang-format on
+
+// // clang-format off
+// Screen screen = {
+//   .dev = {
+//     .name  = "dev/sdl/screen",
+//     .boot  = screen_boot,
+//     .halt  = screen_halt,
+//     .read  = screen_read,
+//     .write = screen_write
+//   },
+//   .window = NULL,
+//   .renderer = NULL,
+//   .red = 0,
+//   .green = 0,
+//   .blue = 0,
+//   .alpha = 0,
+//   .x = 0,
+//   .y = 0,
+// };
+// // clang-format on
+
+// // clang-format off
+// Device screen = {
+//   .name  = "dev/sdl/screen",
+//   .boot  = screen_boot,
+//   .halt  = screen_halt,
+//   .read  = screen_read,
+//   .write = screen_write
+// };
+// // clang-format on

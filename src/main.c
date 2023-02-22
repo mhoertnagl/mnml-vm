@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
+#include "dev/dev.h"
 #include "dev/sdl/screen/screen.h"
 #include "vm/vm.h"
 
@@ -8,7 +9,7 @@
 u8 mem[0xffff];
 
 // Allocate 16 device slots.
-Device dev[15];
+Device *dev[DEV_MAX_ADDR];
 
 // clang-format off
 Vm vm = {
@@ -21,12 +22,14 @@ Vm vm = {
 
 int main()
 {
-  screen.boot();
+  Device *screen = screen_create();
+
+  screen->boot(screen->state);
 
   // TODO: Read binary file into memory.
   // TODO: wird nicht benötigt.
   vm_boot(&vm, mem);
-  vm_attach_device(&vm, 0, &screen);
+  vm_attach_device(&vm, 0, screen);
 
   // screen.write(SCREEN_COLOR, 0x00ff00ff);
 
@@ -43,7 +46,8 @@ int main()
     switch (e.type)
     {
     case SDL_QUIT:
-      screen.halt();
+      dev_destroy(screen);
+      // screen->halt(screen->state);
       SDL_Quit();
       return EXIT_SUCCESS;
 

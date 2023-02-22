@@ -1,6 +1,7 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
+#include <SDL2/SDL.h>
 #include "dev/dev.h"
 
 // clang-format off
@@ -14,6 +15,26 @@
 #define SCREEN_RENDER      0x7
 // clang-format on
 
-extern Device screen;
+// clang-format off
+typedef struct Screen
+{
+  SDL_Window   *window;
+  SDL_Renderer *renderer;
+  u16          red;
+  u16          green;
+  u16          blue;
+  u16          alpha;
+  u16          x;
+  u16          y;
+} Screen;
+// clang-format on
+
+/**
+ * Creates a new screen with color and
+ * coordinates initialized to zero.
+ *
+ * @returns Pointer to the screen Device.
+ */
+extern Device *screen_create();
 
 #endif
