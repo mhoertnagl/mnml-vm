@@ -16,13 +16,13 @@ u16 dev_read(Device *dev, u16 reg)
   return dev->read(dev, reg);
 }
 
-void dev_write(Device *dev, u16 reg, u16 value)
+void dev_write(Device *dev, u16 reg, u16 val)
 {
-  dev->write(dev, reg, value);
+  dev->write(dev, reg, val);
 }
 
 void dev_destroy(Device *dev)
 {
-  dev->halt(dev);
+  dev_halt(dev);
   free(dev);
 }

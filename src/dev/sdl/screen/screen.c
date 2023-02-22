@@ -123,9 +123,9 @@ static void screen_write(Screen *screen, u16 reg, u16 val)
   }
 }
 
-// clang-format off
 Screen *screen_create()
 {
+  // clang-format off
   Screen *screen     = malloc(sizeof(Screen));
   screen->dev.name   = "dev/sdl/screen";
   screen->dev.boot   = screen_boot;
@@ -140,6 +140,6 @@ Screen *screen_create()
   screen->alpha      = 0;
   screen->x          = 0;
   screen->y          = 0;
+  // clang-format on
   return screen;
 }
-// clang-format on

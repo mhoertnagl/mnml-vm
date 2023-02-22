@@ -1,6 +1,6 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include "vm.h"
-#include "dev/dev.h"
 
 u8 vm_pop8(Vm *vm)
 {
@@ -34,38 +34,28 @@ void vm_stw(Vm *vm, i16 a, u16 v)
   vm->mem[vm->pc + a + 1] = v;
 }
 
-void vm_boot(Vm *vm, u8 *mem)
+Vm *vm_create()
 {
+  // clang-format off
+  Vm *vm  = malloc(sizeof(Vm));
+  // vm->mem = NULL;
+  // vm->dev = ??
+  vm->pc  = 0;
+  vm->sp  = 0;
+  // clang-format on
+}
+
+void vm_attach_memory(Vm *vm, Mem *mem)
+{
+  vm->mem = mem->dat;
   vm->pc = 0;
-  vm->sp = 0xffff; // TODO: Memory struct with size.
-  vm->mem = mem;
-  // for (int i = 0; i < DEV_MAX_ADDR; i++)
-  // {
-  //   vm->dev[i] = nul;
-  // }
+  vm->sp = mem->len;
 }
 
 void vm_attach_device(Vm *vm, u8 addr, Device *dev)
 {
-  // TODO: Error handling.
-  // if (addr > DEV_MAX_ADDR)
-  // {
-  //   return;
-  // }
-  // if (dev == NULL)
-  // {
-  //   return;
-  // }
   vm->dev[addr] = dev;
 }
-
-// void vm_run(Vm *vm)
-// {
-//   while (1)
-//   {
-//     vm_step(vm);
-//   }
-// }
 
 void vm_step(Vm *vm)
 {
@@ -379,6 +369,7 @@ void vm_step(Vm *vm)
     const u16 r = vm_pop(vm);
     const u16 v = dev_read(vm->dev[a], r);
     vm_psh(vm, v);
+    vm->pc++;
     break;
   }
 
@@ -388,10 +379,19 @@ void vm_step(Vm *vm)
     const u16 r = vm_pop(vm);
     const u16 v = vm_pop(vm);
     dev_write(vm->dev[a], r, v);
+    vm->pc++;
     break;
   }
 
   default:
+    printf("ERROR: Unsupported operation [%x].", vm->mem[vm->pc]);
+    vm->pc++;
     break;
   }
+}
+
+void vm_destroy(Vm *vm)
+{
+  // mem_destroy(vm->mem);
+  free(vm);
 }

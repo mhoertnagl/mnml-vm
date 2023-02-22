@@ -3,33 +3,32 @@
 #include <SDL2/SDL.h>
 #include "dev/dev.h"
 #include "dev/sdl/screen/screen.h"
+#include "mem/mem.h"
 #include "vm/vm.h"
 
-// Allocate 64kB of memory.
-u8 mem[0xffff];
-
-// Allocate 16 device slots.
-Device *dev[DEV_MAX_ADDR];
-
-// clang-format off
-Vm vm = {
-  .pc = 0,
-  .sp = 0xffff,
-  .mem = mem,
-  .dev = dev,
-};
-// clang-format on
-
-int main()
+int main(int argc, char **argv)
 {
+  if (argc < 2)
+  {
+    printf("Usage: %s <filename>", argv[0]);
+    return EXIT_FAILURE;
+  }
+
+  return run(argv[1]);
+}
+
+int run(cstr filename)
+{
+  // clang-format off
   Screen *screen = screen_create();
+  Mem    *mem    = mem_create(MEM_SIZE_MAX);
+  Vm     *vm     = vm_create();
+  // clang-format on
 
   dev_boot(screen);
 
-  // TODO: Read binary file into memory.
-  // TODO: wird nicht benötigt.
-  vm_boot(&vm, mem);
-  vm_attach_device(&vm, 0, screen);
+  vm_attach_memory(vm, mem);
+  vm_attach_device(vm, 0, screen);
 
   dev_write(screen, SCREEN_COLOR_RED, 0x00);
   dev_write(screen, SCREEN_COLOR_GREEN, 0xff);
@@ -68,6 +67,8 @@ int main()
   }
 
   dev_destroy(screen);
+  mem_destroy(mem);
+  vm_destroy(vm);
   SDL_Quit();
 
   return EXIT_SUCCESS;

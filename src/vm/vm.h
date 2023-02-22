@@ -1,6 +1,7 @@
 #ifndef VM_H
 #define VM_H
 
+#include "mem/mem.h"
 #include "dev/dev.h"
 
 #define DEV_MAX_ADDR 15
@@ -50,20 +51,24 @@
 #define VM_DRX 0x1e // (a b -- dev[b].read(a)) --------+
 #define VM_DTX 0x1f // (a b c -- ) dev[b].write(a, c) -+- Lower 4 bit could identify the device. This would allow for 15 devices in total.
 
-// clang-format off
 typedef struct Vm
 {
-  u16    pc;
-  u16    sp;
+  // clang-format off
   u8     *mem;
   Device *dev[DEV_MAX_ADDR];
+  u16    pc;
+  u16    sp;
+  // clang-format on
 } Vm;
-// clang-format off
 
-void vm_boot(Vm *vm, u8 *mem);
+extern Vm *vm_create();
 
-void vm_attach_device(Vm *vm, u8 addr, Device *dev);
+extern void vm_attach_memory(Vm *vm, Mem *mem);
 
-void vm_step(Vm *vm);
+extern void vm_attach_device(Vm *vm, u8 addr, Device *dev);
+
+extern void vm_step(Vm *vm);
+
+extern void vm_destroy(Vm *vm);
 
 #endif
