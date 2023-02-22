@@ -8,5 +8,5 @@
     "string_view": "c",
     "cstdio": "c",
     "fstream": "c"
-  }
+  },
 }
