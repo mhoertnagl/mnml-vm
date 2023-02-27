@@ -53,7 +53,7 @@
  * SDL2 Screen device. Holds the current color
  * and position.
  */
-typedef struct Screen
+typedef struct
 {
   // clang-format off
   Device       dev;

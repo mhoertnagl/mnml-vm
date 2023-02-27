@@ -8,7 +8,7 @@
 
 int main(int argc, char **argv)
 {
-  if (argc < 2)
+  if (argc < 1)
   {
     printf("Usage: %s <filename>\n", argv[0]);
     return EXIT_FAILURE;
@@ -19,11 +19,9 @@ int main(int argc, char **argv)
 
 int run(cstr filename)
 {
-  // clang-format off
   Screen *screen = screen_create();
-  Mem    *mem    = mem_create(MEM_SIZE_MAX);
-  Vm     *vm     = vm_create();
-  // clang-format on
+  Mem *mem = mem_create(MEM_SIZE_MAX);
+  Vm *vm = vm_create();
 
   dev_boot(screen);
 

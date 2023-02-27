@@ -51,7 +51,7 @@
 #define VM_DRX 0x1e // (a b -- dev[b].read(a)) --------+
 #define VM_DTX 0x1f // (a b c -- ) dev[b].write(a, c) -+- Lower 4 bit could identify the device. This would allow for 15 devices in total.
 
-typedef struct Vm
+typedef struct
 {
   // clang-format off
   u8     *mem;

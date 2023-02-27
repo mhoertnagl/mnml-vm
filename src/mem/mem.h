@@ -8,7 +8,7 @@
  */
 #define MEM_SIZE_MAX 0xffff
 
-typedef struct Mem
+typedef struct
 {
   // clang-format off
   u8  *dat;
@@ -30,6 +30,11 @@ extern Mem *mem_create(u32 size);
  */
 extern void mem_init(Mem *mem, cstr filename);
 
+/**
+ * Frees the allocated memory.
+ *
+ * @param mem The memory.
+ */
 extern void mem_destroy(Mem *mem);
 
 #endif

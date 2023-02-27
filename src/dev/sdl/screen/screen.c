@@ -126,20 +126,20 @@ static void screen_write(Screen *screen, u16 reg, u16 val)
 Screen *screen_create()
 {
   // clang-format off
-  Screen *screen     = malloc(sizeof(Screen));
-  screen->dev.name   = "dev/sdl/screen";
-  screen->dev.boot   = screen_boot;
-  screen->dev.halt   = screen_halt;
-  screen->dev.read   = screen_read;
-  screen->dev.write  = screen_write;
-  screen->window     = NULL;
-  screen->renderer   = NULL;
-  screen->red        = 0;
-  screen->green      = 0;
-  screen->blue       = 0;
-  screen->alpha      = 0;
-  screen->x          = 0;
-  screen->y          = 0;
+  Screen *screen    = malloc(sizeof(Screen));
+  screen->dev.name  = "dev/sdl/screen";
+  screen->dev.boot  = screen_boot;
+  screen->dev.halt  = screen_halt;
+  screen->dev.read  = screen_read;
+  screen->dev.write = screen_write;
+  screen->window    = NULL;
+  screen->renderer  = NULL;
+  screen->red       = 0;
+  screen->green     = 0;
+  screen->blue      = 0;
+  screen->alpha     = 0;
+  screen->x         = 0;
+  screen->y         = 0;
   // clang-format on
   return screen;
 }

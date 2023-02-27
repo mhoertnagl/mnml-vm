@@ -47,7 +47,7 @@ typedef void (*write_fn)(void *dev, u16 reg, u16 val);
  * Device struct. Contains meta information about this
  * device and function pointers the device's methods.
  */
-typedef struct Device
+typedef struct
 {
   // clang-format off
   cstr     name;
