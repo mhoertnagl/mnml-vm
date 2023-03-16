@@ -23,6 +23,7 @@ int run(cstr filename)
   Mem *mem = mem_create(MEM_SIZE_MAX);
   Vm *vm = vm_create();
 
+  mem_init(mem, filename);
   dev_boot(screen);
 
   vm_attach_memory(vm, mem);
@@ -48,20 +49,10 @@ int run(cstr filename)
 
     if (e.type == SDL_QUIT)
     {
-      return EXIT_SUCCESS;
+      break;
     }
 
-    // switch (e.type)
-    // {
-    // case SDL_QUIT:
-    //   dev_destroy(screen);
-    //   SDL_Quit();
-    //   return EXIT_SUCCESS;
-
-    // default:
-    //   vm_step(&vm);
-    //   break;
-    // }
+    vm_step(&vm);
   }
 
   dev_destroy(screen);

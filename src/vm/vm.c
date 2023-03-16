@@ -21,28 +21,24 @@ void vm_psh(Vm *vm, u16 v)
   vm->sp += 2;
 }
 
-u16 vm_ldw(Vm *vm, i16 a)
+u16 vm_ldw(Vm *vm, u16 a)
 {
-  const u8 h = vm->mem[vm->pc + a];
-  const u8 l = vm->mem[vm->pc + a + 1];
+  const u8 h = vm->mem[a];
+  const u8 l = vm->mem[a + 1];
   return (h << 8) | l;
 }
 
-void vm_stw(Vm *vm, i16 a, u16 v)
+void vm_stw(Vm *vm, u16 a, u16 v)
 {
-  vm->mem[vm->pc + a] = (v >> 8);
-  vm->mem[vm->pc + a + 1] = v;
+  vm->mem[a] = (v >> 8);
+  vm->mem[a + 1] = v;
 }
 
 Vm *vm_create()
 {
-  // clang-format off
-  Vm *vm  = malloc(sizeof(Vm));
-  // vm->mem = NULL;
-  // vm->dev = ??
-  vm->pc  = 0;
-  vm->sp  = 0;
-  // clang-format on
+  Vm *vm = malloc(sizeof(Vm));
+  vm->pc = 0;
+  vm->sp = 0;
 }
 
 void vm_attach_memory(Vm *vm, Mem *mem)
@@ -324,16 +320,15 @@ void vm_step(Vm *vm)
 
   case VM_JMP:
   {
-    const i16 a = vm_pop(vm);
-    vm->pc += a;
+    vm->pc = vm_pop(vm);
     break;
   }
 
   case VM_JAL:
   {
-    const i16 a = vm_pop(vm);
-    vm_psh(vm, vm->pc + 1);
-    vm->pc += a;
+    const u16 pc = vm->pc;
+    vm->pc = vm_pop(vm);
+    vm_psh(vm, pc + 1);
     break;
   }
 
