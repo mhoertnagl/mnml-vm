@@ -72,14 +72,14 @@ typedef struct
   // clang-format on
 } Vm;
 
-extern Vm *vm_create();
+extern Vm *new_vm();
+
+extern void free_vm(Vm *vm);
 
 extern void vm_attach_memory(Vm *vm, Mem *mem);
 
 extern void vm_attach_device(Vm *vm, u8 addr, Device *dev);
 
 extern void vm_step(Vm *vm);
-
-extern void vm_destroy(Vm *vm);
 
 #endif

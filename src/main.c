@@ -19,9 +19,9 @@ int main(int argc, char **argv)
 
 int run(cstr filename)
 {
-  Screen *screen = screen_create();
-  Mem *mem = mem_create(MEM_SIZE_MAX);
-  Vm *vm = vm_create();
+  Mem *mem = new_mem(MEM_SIZE_MAX);
+  Screen *screen = new_screen();
+  Vm *vm = new_vm();
 
   mem_init(mem, filename);
   dev_boot(screen);
@@ -52,12 +52,12 @@ int run(cstr filename)
       break;
     }
 
-    vm_step(&vm);
+    vm_step(vm);
   }
 
-  dev_destroy(screen);
-  mem_destroy(mem);
-  vm_destroy(vm);
+  free_screen(screen);
+  free_mem(mem);
+  free_vm(vm);
   SDL_Quit();
 
   return EXIT_SUCCESS;

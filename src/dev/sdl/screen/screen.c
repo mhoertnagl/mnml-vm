@@ -123,7 +123,7 @@ static void screen_write(Screen *screen, u16 reg, u16 val)
   }
 }
 
-Screen *screen_create()
+Screen *new_screen()
 {
   // clang-format off
   Screen *screen    = malloc(sizeof(Screen));
@@ -142,4 +142,10 @@ Screen *screen_create()
   screen->y         = 0;
   // clang-format on
   return screen;
+}
+
+void free_screen(Screen *screen)
+{
+  screen_halt(screen);
+  free(screen);
 }

@@ -99,11 +99,4 @@ extern u16 dev_read(Device *dev, u16 reg);
  */
 extern void dev_write(Device *dev, u16 reg, u16 val);
 
-/**
- * Destroys the device.
- * 
- * @param dev The device to be destroyed.
- */
-extern void dev_destroy(Device *dev);
-
 #endif

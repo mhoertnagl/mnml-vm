@@ -19,7 +19,14 @@ typedef struct
 /**
  * Allocate 64kb of memory.
  */
-extern Mem *mem_create(u32 size);
+extern Mem *new_mem(u32 size);
+
+/**
+ * Frees the allocated memory.
+ *
+ * @param mem The memory.
+ */
+extern void free_mem(Mem *mem);
 
 /**
  * Loads the contents of the binary file into
@@ -29,12 +36,5 @@ extern Mem *mem_create(u32 size);
  * @param filename The path to the binary file.
  */
 extern void mem_init(Mem *mem, cstr filename);
-
-/**
- * Frees the allocated memory.
- *
- * @param mem The memory.
- */
-extern void mem_destroy(Mem *mem);
 
 #endif

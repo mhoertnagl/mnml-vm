@@ -34,11 +34,17 @@ void vm_stw(Vm *vm, u16 a, u16 v)
   vm->mem[a + 1] = v;
 }
 
-Vm *vm_create()
+Vm *new_vm()
 {
   Vm *vm = malloc(sizeof(Vm));
   vm->pc = 0;
   vm->sp = 0;
+  return vm;
+}
+
+void free_vm(Vm *vm)
+{
+  free(vm);
 }
 
 void vm_attach_memory(Vm *vm, Mem *mem)
@@ -148,6 +154,9 @@ void vm_step(Vm *vm)
     vm_psh(vm, a);
     vm_psh(vm, c);
     vm_psh(vm, b);
+
+    // TODO: Alternative
+
     vm->pc++;
     break;
   }
@@ -383,10 +392,4 @@ void vm_step(Vm *vm)
     vm->pc++;
     break;
   }
-}
-
-void vm_destroy(Vm *vm)
-{
-  // mem_destroy(vm->mem);
-  free(vm);
 }

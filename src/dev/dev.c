@@ -20,9 +20,3 @@ void dev_write(Device *dev, u16 reg, u16 val)
 {
   dev->write(dev, reg, val);
 }
-
-void dev_destroy(Device *dev)
-{
-  dev_halt(dev);
-  free(dev);
-}

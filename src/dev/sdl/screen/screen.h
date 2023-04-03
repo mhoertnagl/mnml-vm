@@ -74,6 +74,13 @@ typedef struct
  *
  * @returns Pointer to the Screen device.
  */
-extern Screen *screen_create();
+extern Screen *new_screen();
+
+/**
+ * Halts and then destroys the screen device.
+ *
+ * @param screen The screen device.
+ */
+extern void free_screen(Screen *screen);
 
 #endif
