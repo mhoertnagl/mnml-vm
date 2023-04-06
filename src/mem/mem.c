@@ -1,8 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "mem/mem.h"
+#include "utils/errio.h"
 
-cstr MEM_EXCEED = "WARN: File size [%d bytes] exceeds memory size [%d bytes].\n";
+// clang-format off
+#define MEM_EXCEED "WARN: File size [%d bytes] exceeds memory size [%d bytes].\n"
+#define NOT_FOUND  "ERROR: Could not open file [%s].\n"
+// clang-format on
 
 Mem *new_mem(u32 size)
 {
@@ -20,18 +24,23 @@ void free_mem(Mem *mem)
 
 void mem_init(Mem *mem, cstr filename)
 {
-  FILE *fptr = fopen(filename, "rb");
-  fseek(fptr, 0, SEEK_END);
-  u32 len = ftell(fptr);
+  FILE *img = fopen(filename, "rb");
 
-  if (len < mem->len)
+  if (img == NULL)
   {
-    printf(MEM_EXCEED, len, mem->len);
-    fclose(fptr);
+    perrorf(NOT_FOUND, filename);
+  }
+
+  fseek(img, 0, SEEK_END);
+  u32 len = ftell(img);
+  if (len > mem->len)
+  {
+    perrorf(MEM_EXCEED, len, mem->len);
+    fclose(img);
     return;
   }
 
-  rewind(fptr);
-  fread(mem, len, sizeof(u8), fptr);
-  fclose(fptr);
+  rewind(img);
+  fread(mem->dat, len, sizeof(u8), img);
+  fclose(img);
 }
