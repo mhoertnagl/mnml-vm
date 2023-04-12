@@ -4,7 +4,7 @@
 
 mu_unit({
   test("Initialize memory with /files/01.as", {
-    Mem *mem = new_mem(1000);
+    Mem *mem = new_mem(1024);
     mem_init(mem, "./test/files/01.vm");
     assert_int_equal(mem->dat[0], VM_PSH);
     assert_int_equal(mem->dat[1], VM_POP);

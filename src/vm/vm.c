@@ -2,23 +2,18 @@
 #include <stdlib.h>
 #include "vm.h"
 
-u8 vm_pop8(Vm *vm)
-{
-  return vm->mem[--vm->sp];
-}
-
 u16 vm_pop(Vm *vm)
 {
-  const u8 h = vm->mem[--vm->sp];
-  const u8 l = vm->mem[--vm->sp];
+  const u8 h = vm->mem[++vm->sp];
+  const u8 l = vm->mem[++vm->sp];
   return (h << 8) | l;
 }
 
 void vm_psh(Vm *vm, u16 v)
 {
-  vm->mem[vm->sp] = (v >> 8);
-  vm->mem[vm->sp + 1] = v;
-  vm->sp += 2;
+  vm->mem[vm->sp--] = (v >> 8);
+  vm->mem[vm->sp--] = v;
+  // vm->sp -= 2;
 }
 
 u16 vm_ldw(Vm *vm, u16 a)
@@ -51,7 +46,7 @@ void vm_attach_memory(Vm *vm, Mem *mem)
 {
   vm->mem = mem->dat;
   vm->pc = 0;
-  vm->sp = mem->len;
+  vm->sp = mem->len - 1;
 }
 
 void vm_attach_device(Vm *vm, u8 addr, Device *dev)
@@ -65,15 +60,19 @@ void vm_step(Vm *vm)
   {
   case VM_PSH:
   {
-    const u16 v = vm_ldw(vm, 1);
+    const u16 v = vm_ldw(vm, ++vm->pc);
     vm_psh(vm, v);
-    vm->pc += 3;
+    vm->pc += 2;
     break;
   }
 
   case VM_POP:
   {
-    vm->sp++;
+    vm_pop(vm);
+
+    // Alternative 1:
+    // vm->pc += 2;
+
     vm->pc++;
     break;
   }
@@ -369,7 +368,7 @@ void vm_step(Vm *vm)
 
   case VM_DRX:
   {
-    const u8 a = vm_pop8(vm);
+    const u16 a = vm_pop(vm);
     const u16 r = vm_pop(vm);
     const u16 v = dev_read(vm->dev[a], r);
     vm_psh(vm, v);
@@ -379,7 +378,7 @@ void vm_step(Vm *vm)
 
   case VM_DTX:
   {
-    const u8 a = vm_pop8(vm);
+    const u16 a = vm_pop(vm);
     const u16 r = vm_pop(vm);
     const u16 v = vm_pop(vm);
     dev_write(vm->dev[a], r, v);

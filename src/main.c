@@ -6,17 +6,6 @@
 #include "mem/mem.h"
 #include "vm/vm.h"
 
-int main(int argc, char **argv)
-{
-  if (argc < 1)
-  {
-    printf("Usage: %s <filename>\n", argv[0]);
-    return EXIT_FAILURE;
-  }
-
-  return run(argv[1]);
-}
-
 int run(cstr filename)
 {
   Mem *mem = new_mem(MEM_SIZE_MAX);
@@ -61,4 +50,15 @@ int run(cstr filename)
   SDL_Quit();
 
   return EXIT_SUCCESS;
+}
+
+int main(int argc, char **argv)
+{
+  if (argc < 1)
+  {
+    printf("Usage: %s <filename>\n", argv[0]);
+    return EXIT_FAILURE;
+  }
+
+  return run(argv[1]);
 }

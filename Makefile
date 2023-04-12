@@ -16,6 +16,7 @@
 
 CC = clang
 CFLAGS = -std=c17 -g -Wall
+MNML_AS = ../mnml-as/build/mnml-as
 
 # Binary
 #------------------------------------------------------------------------------
@@ -39,6 +40,8 @@ DEPS += -I$(SRC_DIR)
 #------------------------------------------------------------------------------
 # Unit tests source root directory.
 TST_SRC_DIR = ./test
+# Unit tests mnml-as test source files root directory.
+TST_FILES_SRC_DIR = $(TST_SRC_DIR)/files
 # Unit tests build root directory.
 TST_OUT_DIR = ./build/tests
 # Subdirectory for all unit test object files.
@@ -58,6 +61,8 @@ OBJ = $(patsubst $(SRC_DIR)/%, $(OBJ_DIR)/%, $(SRC:.c=.o))
 
 TST_INC = $(shell find $(TST_SRC_DIR) -name '*.h')
 TST_SRC = $(shell find $(TST_SRC_DIR) -name '*.c')
+# mnml-as test files sources.
+TST_FILES_SRC = $(shell find $(TST_FILES_SRC_DIR) -name '*.as')
 # Exclude binary main object file.
 NMM_OBJ = $(filter-out %main.o, $(OBJ)) 
 TST_OBJ = $(patsubst $(TST_SRC_DIR)/%, $(TST_OBJ_DIR)/%, $(TST_SRC:.c=.o))
@@ -66,6 +71,8 @@ NMM_TST_OBJ = $(filter-out %.test.o, $(TST_OBJ))
 # Gather all unit test files. 
 # All files with *.test.c are considered unit test files.
 TST_TARGETS = $(patsubst $(TST_SRC_DIR)/%.test.c, $(TST_OUT_DIR)/%.test, $(TST_SRC))
+# Gather all mnml-as source files.
+TST_FILES = $(patsubst $(TST_FILES_SRC_DIR)/%.as, $(TST_FILES_SRC_DIR)/%.vm, $(TST_FILES_SRC))
 
 # Creates the binary.
 all: $(TARGET)
@@ -90,6 +97,11 @@ $(TST_OUT_DIR)/%.test: $(NMM_OBJ) $(NMM_TST_OBJ) $(TST_OBJ_DIR)/%.test.o
 $(TST_OBJ_DIR)/%.o: $(TST_SRC_DIR)/%.c $(INC) $(TST_INC)
 	@mkdir -p $(dir $@)
 	$(CC) -c $(CFLAGS) $(LIBS) $(TST_LIBS) $(DEPS) $(TST_DEPS) $< -o $@
+
+testfiles: $(TST_FILES)
+
+$(TST_FILES_SRC_DIR)/%.vm: $(TST_FILES_SRC_DIR)/%.as
+	$(MNML_AS) $< $@
 
 # Full clean. 
 # Removes the build directory.
