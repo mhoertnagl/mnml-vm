@@ -4,15 +4,15 @@
 
 u16 vm_pop(Vm *vm)
 {
-  const u8 h = vm->mem[++vm->sp];
   const u8 l = vm->mem[++vm->sp];
+  const u8 h = vm->mem[++vm->sp];
   return (h << 8) | l;
 }
 
 void vm_psh(Vm *vm, u16 v)
 {
-  vm->mem[vm->sp--] = (v >> 8);
-  vm->mem[vm->sp--] = v;
+  vm->mem[vm->sp--] = (v >> 8) & 0xff;
+  vm->mem[vm->sp--] = v & 0xff;
 }
 
 u16 vm_ldw(Vm *vm, u16 a)
@@ -24,8 +24,8 @@ u16 vm_ldw(Vm *vm, u16 a)
 
 void vm_stw(Vm *vm, u16 a, u16 v)
 {
-  vm->mem[a] = (v >> 8);
-  vm->mem[a + 1] = v;
+  vm->mem[a] = (v >> 8) & 0xff;
+  vm->mem[a + 1] = v & 0xff;
 }
 
 Vm *new_vm()

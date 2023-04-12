@@ -98,7 +98,7 @@ $(TST_OBJ_DIR)/%.o: $(TST_SRC_DIR)/%.c $(INC) $(TST_INC)
 	@mkdir -p $(dir $@)
 	$(CC) -c $(CFLAGS) $(LIBS) $(TST_LIBS) $(DEPS) $(TST_DEPS) $< -o $@
 
-testfiles: $(TST_FILES)
+testfiles: cleantestfiles $(TST_FILES)
 
 $(TST_FILES_SRC_DIR)/%.vm: $(TST_FILES_SRC_DIR)/%.as
 	$(MNML_AS) $< $@
@@ -108,4 +108,7 @@ $(TST_FILES_SRC_DIR)/%.vm: $(TST_FILES_SRC_DIR)/%.as
 clean:
 	@rm -rf $(OUT_DIR)
 
-.PHONY: clean
+cleantestfiles:
+	@rm -f $(TST_FILES_SRC_DIR)/*.vm
+
+.PHONY: clean cleantestfiles
