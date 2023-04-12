@@ -34,7 +34,7 @@
 #define VM_SGE 0x18 // ( a b   -- b>=a           )
 #define VM_JMP 0x19 // ( a     --                ) pc = a
 #define VM_JAL 0x1a // ( a     -- pc+1           ) pc = a
-#define VM_BRA 0x1b // ( b a   --                ) if b then pc = a
+#define VM_BRA 0x1b // ( a b   --                ) if b then pc = a
 #define VM_LDW 0x1c // ( a     -- mem[a]         )
 #define VM_STW 0x1d // ( a b   --                ) mem[a] = b
 #define VM_DRX 0x1e // ( a b   -- dev[b].read(a) )
