@@ -13,7 +13,6 @@ void vm_psh(Vm *vm, u16 v)
 {
   vm->mem[vm->sp--] = (v >> 8);
   vm->mem[vm->sp--] = v;
-  // vm->sp -= 2;
 }
 
 u16 vm_ldw(Vm *vm, u16 a)
@@ -69,10 +68,6 @@ void vm_step(Vm *vm)
   case VM_POP:
   {
     vm_pop(vm);
-
-    // Alternative 1:
-    // vm->pc += 2;
-
     vm->pc++;
     break;
   }
@@ -82,14 +77,6 @@ void vm_step(Vm *vm)
     const u16 a = vm_pop(vm);
     vm_pop(vm);
     vm_psh(vm, a);
-
-    // Alternative 1:
-    // vm->sp--;
-    // vm->mem[vm->sp - 1] = vm->mem[vm->sp];
-
-    // Alternative 2 (??):
-    // vm->mem[vm->sp - 1] = vm->mem[--vm->sp];
-
     vm->pc++;
     break;
   }
@@ -100,17 +87,6 @@ void vm_step(Vm *vm)
     const u16 b = vm_pop(vm);
     vm_psh(vm, a);
     vm_psh(vm, b);
-
-    // Alternative 1:
-    // const u16 t = vm->mem[vm->sp - 1];
-    // vm->mem[vm->sp - 1] = vm->mem[vm->sp - 2];
-    // vm->mem[vm->sp - 2] = t;
-
-    // Alternative 2:
-    // vm->mem[vm->sp - 1] ^= vm->mem[vm->sp - 2];
-    // vm->mem[vm->sp - 2] ^= vm->mem[vm->sp - 1];
-    // vm->mem[vm->sp - 1] ^= vm->mem[vm->sp - 2];
-
     vm->pc++;
     break;
   }
@@ -122,11 +98,6 @@ void vm_step(Vm *vm)
     vm_psh(vm, b);
     vm_psh(vm, a);
     vm_psh(vm, b);
-
-    // Alternative 1:
-    // vm->mem[vm->sp] = vm->mem[vm->sp - 2];
-    // vm->sp++;
-
     vm->pc++;
     break;
   }
@@ -136,11 +107,6 @@ void vm_step(Vm *vm)
     const u16 a = vm_pop(vm);
     vm_psh(vm, a);
     vm_psh(vm, a);
-
-    // Alternative 1:
-    // vm->mem[vm->sp] = vm->mem[vm->sp - 1];
-    // vm->sp++;
-
     vm->pc++;
     break;
   }
@@ -153,9 +119,6 @@ void vm_step(Vm *vm)
     vm_psh(vm, a);
     vm_psh(vm, c);
     vm_psh(vm, b);
-
-    // TODO: Alternative
-
     vm->pc++;
     break;
   }
