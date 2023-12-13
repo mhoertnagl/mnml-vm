@@ -3,9 +3,7 @@
 
 #include "utils/types.h"
 
-/**
- * Maximum size of accessible memory.
- */
+/** Maximum size of addressable memory. */
 #define MEM_SIZE_MAX 0xffff
 
 typedef struct
@@ -17,7 +15,10 @@ typedef struct
 } Mem;
 
 /**
- * Allocate 64kb of memory.
+ * Allocate size bytes of memory.
+ *
+ * @param size The size of the memory
+ *             in bytes.
  */
 extern Mem *new_mem(u32 size);
 

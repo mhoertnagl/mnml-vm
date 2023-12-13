@@ -4,7 +4,7 @@
 
 #define WINDOW_TITLE "mnml VM v0.1"
 #define WINDOW_WIDTH 800
-#define WINDOW_HEIGTH 640
+#define WINDOW_HEIGHT 640
 
 static u8 screen_boot(Screen *screen)
 {
@@ -20,14 +20,14 @@ static u8 screen_boot(Screen *screen)
   // screen and a renderer to draw pixels.
   int status = SDL_CreateWindowAndRenderer(
       WINDOW_WIDTH,
-      WINDOW_HEIGTH,
+      WINDOW_HEIGHT,
       0,
       &screen->window,
       &screen->renderer);
 
   if (status == -1)
   {
-    perror("Faild to create window and renderer.\n");
+    perror("Failed to create window and renderer.\n");
     perror(SDL_GetError());
     return EXIT_FAILURE;
   }

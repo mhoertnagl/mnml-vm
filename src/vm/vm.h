@@ -4,41 +4,40 @@
 #include "mem/mem.h"
 #include "dev/dev.h"
 
+/** Maximum device address. */
 #define DEV_MAX_ADDR 15
+
+/** Size of the return stack. */
+#define RETURN_STACK_SIZE 128
 
 // clang-format off
 #define VM_PSH 0x00 // (       -- a              )
 #define VM_POP 0x01 // ( a     --                )
-#define VM_NIP 0x02 // ( a b   -- a              )
+#define VM_DUP 0x02 // ( a     -- a a            )
 #define VM_SWP 0x03 // ( a b   -- b a            )
-#define VM_OVR 0x04 // ( a b   -- b a b          )
-#define VM_DUP 0x05 // ( a     -- a a            )
-#define VM_ROT 0x06 // ( a b c -- b c a          )
-#define VM_INC 0x07 // ( a     -- a+1            )
-#define VM_DEC 0x08 // ( a     -- a-1            )
-#define VM_ADD 0x09 // ( a b   -- b+a            )
-#define VM_SUB 0x0a // ( a b   -- b-a            )
-#define VM_MUL 0x0b // ( a b   -- b*a            )
-#define VM_DIV 0x0c // ( a b   -- ⌊b/a⌋          )
-#define VM_NOT 0x0d // ( a     -- !a             )
-#define VM_AND 0x0e // ( a b   -- b&a            )
-#define VM_OOR 0x0f // ( a b   -- b|a            )
-#define VM_XOR 0x10 // ( a b   -- b^a            )
-#define VM_SLL 0x11 // ( a b   -- b<<a           )
-#define VM_SRL 0x12 // ( a b   -- b>>a           )
-#define VM_EQU 0x13 // ( a b   -- b==a?1:0       )
-#define VM_NEQ 0x14 // ( a b   -- b!=a?1:0       )
-#define VM_SLT 0x15 // ( a b   -- b<a            )
-#define VM_SGT 0x16 // ( a b   -- b>a            )
-#define VM_SLE 0x17 // ( a b   -- b<=a           )
-#define VM_SGE 0x18 // ( a b   -- b>=a           )
-#define VM_JMP 0x19 // ( a     --                ) pc = a
-#define VM_JAL 0x1a // ( a     -- pc+1           ) pc = a
-#define VM_BRA 0x1b // ( a b   --                ) if b then pc = a
-#define VM_LDW 0x1c // ( a     -- mem[a]         )
-#define VM_STW 0x1d // ( a b   --                ) mem[a] = b
-#define VM_DRX 0x1e // ( a b   -- dev[b].read(a) )
-#define VM_DTX 0x1f // ( a b c --                ) dev[b].write(a, c)
+#define VM_ROT 0x04 // ( a b c -- b c a          )
+#define VM_OVR 0x05 // ( a b   -- a b a          )
+#define VM_ADD 0x06 // ( a b   -- b+a            )
+#define VM_SUB 0x07 // ( a b   -- b-a            )
+#define VM_MUL 0x08 // ( a b   -- b*a            )
+#define VM_DIV 0x09 // ( a b   -- ⌊b/a⌋          )
+#define VM_NOT 0x0a // ( a     -- !a             )
+#define VM_AND 0x0b // ( a b   -- b&a            )
+#define VM_OOR 0x0c // ( a b   -- b|a            )
+#define VM_SLL 0x0d // ( a b   -- b<<a           )
+#define VM_SRL 0x0e // ( a b   -- b>>a           )
+#define VM_EQU 0x0f // ( a b   -- b==a?1:0       )
+#define VM_SLT 0x10 // ( a b   -- b<a            )
+#define VM_JMP 0x11 // ( a     --                ) pc = a
+#define VM_JAL 0x12 // ( a     --                ) rs_push(pc); pc = a
+#define VM_BRA 0x13 // ( a b   --                ) if b then pc = a
+#define VM_RET 0x14
+#define VM_LDR 0x15
+#define VM_STR 0x16
+#define VM_LDW 0x17 // ( a     -- mem[a]         )
+#define VM_STW 0x18 // ( a v   --                ) mem[a] = v
+#define VM_DRX 0x19 // ( a d   -- dev[d].read(a) )
+#define VM_DTX 0x1a // ( a d v --                ) dev[d].write(a, v)
 
 // SIDE EFFECTS
 // ------------------------------------------
@@ -67,6 +66,7 @@ typedef struct
   Device *dev[DEV_MAX_ADDR];
   u16    pc;
   u16    sp;
+  u16    rp;
   // clang-format on
 } Vm;
 
