@@ -2,45 +2,6 @@
 #include <stdlib.h>
 #include "vm.h"
 
-static u16 vm_pop(Vm *vm)
-{
-  const u8 l = vm->mem[++vm->sp];
-  const u8 h = vm->mem[++vm->sp];
-  return (h << 8) | l;
-}
-
-static void vm_psh(Vm *vm, u16 v)
-{
-  vm->mem[vm->sp--] = (v >> 8) & 0xff;
-  vm->mem[vm->sp--] = v & 0xff;
-}
-
-static u16 vm_rs_pop(Vm *vm)
-{
-  const u8 l = vm->mem[++vm->rp];
-  const u8 h = vm->mem[++vm->rp];
-  return (h << 8) | l;
-}
-
-static void vm_rs_psh(Vm *vm, u16 v)
-{
-  vm->mem[vm->rp--] = (v >> 8) & 0xff;
-  vm->mem[vm->rp--] = v & 0xff;
-}
-
-static u16 vm_ldw(Vm *vm, u16 a)
-{
-  const u8 h = vm->mem[a];
-  const u8 l = vm->mem[a + 1];
-  return (h << 8) | l;
-}
-
-static void vm_stw(Vm *vm, u16 a, u16 v)
-{
-  vm->mem[a] = (v >> 8) & 0xff;
-  vm->mem[a + 1] = v & 0xff;
-}
-
 Vm *vm_new()
 {
   Vm *vm = malloc(sizeof(Vm));
@@ -59,10 +20,10 @@ void vm_attach_memory(Vm *vm, Mem *mem)
 {
   vm->mem = mem->dat;
   vm->pc = 0;
-  // Data stack starts before the return stack.
-  vm->sp = mem->len - RETURN_STACK_SIZE - 1;
   // Return stack starts at the end of the memory.
   vm->rp = mem->len - 1;
+  // Data stack starts before the return stack.
+  vm->sp = vm->rp - RETURN_STACK_SIZE;
 }
 
 void vm_attach_device(Vm *vm, u8 addr, Device *dev)
@@ -70,167 +31,151 @@ void vm_attach_device(Vm *vm, u8 addr, Device *dev)
   vm->dev[addr] = dev;
 }
 
+// TODO: This would give a stack like
+// @00 0x12
+// @01 0x34
+// @02 ----
+// -> pop would give 0x1234
+#define POP(var) \
+  ((vm->mem[++vm->sp] << 8) | vm->mem[++vm->sp])
+
+#define POP(var)                          \
+  const u8 l##var = vm->mem[++vm->sp];    \
+  const u8 h##var = vm->mem[++vm->sp];    \
+  const u16 var = (h##var << 8) | l##var;
+
+#define POP_SIGNED(var)                   \
+  const u8 l##var = vm->mem[++vm->sp];    \
+  const u8 h##var = vm->mem[++vm->sp];    \
+  const i16 var = (h##var << 8) | l##var;
+
+#define PUSH(v)                          \
+  vm->mem[vm->sp--] = ((v) >> 8) & 0xff; \
+  vm->mem[vm->sp--] = (v) & 0xff;
+
+static u16 vm_rs_pop(Vm *vm)
+{
+  const u8 l = vm->mem[++vm->rp];
+  const u8 h = vm->mem[++vm->rp];
+  return (h << 8) | l;
+}
+
+static void vm_rs_psh(Vm *vm, u16 v)
+{
+  vm->mem[vm->rp--] = (v >> 8) & 0xff;
+  vm->mem[vm->rp--] = v & 0xff;
+}
+
+#define LOAD_WORD(a) \
+  ((vm->mem[a] << 8) | vm->mem[a + 1])
+
+// #define LOAD_WORD(a) ((u16 *)vm->mem)[a]
+
+#define STORE_WORD(a, v)        \
+  vm->mem[a] = (v >> 8) & 0xff; \
+  vm->mem[a + 1] = v & 0xff;
+
+#define UNARY_OP(op)  \
+  POP(a)              \
+  const u16 b = op a; \
+  PUSH(b)             \
+  vm->pc++;
+
+#define BINARY_OP(op)   \
+  POP(a)                \
+  POP(b)                \
+  const u16 c = b op a; \
+  PUSH(c)               \
+  vm->pc++;
+
 void vm_step(Vm *vm)
 {
+  // clang-format off
   switch (vm->mem[vm->pc])
   {
   case VM_PSH:
   {
-    const u16 v = vm_ldw(vm, ++vm->pc);
-    vm_psh(vm, v);
+    vm->pc++;
+    u16 v = LOAD_WORD(vm->pc);
+    PUSH(v)
     vm->pc += 2;
     break;
   }
   case VM_POP:
   {
-    vm_pop(vm);
+    vm->sp += 2;
     vm->pc++;
     break;
   }
   case VM_DUP:
   {
-    const u16 a = vm_pop(vm);
-    vm_psh(vm, a);
-    vm_psh(vm, a);
+    // Is this correct?
+    const u8 l = vm->mem[vm->sp + 1];
+    const u8 h = vm->mem[vm->sp + 2];
+    u16 a = (h << 8) | l;
+    PUSH(a)
     vm->pc++;
     break;
   }
   case VM_SWP:
   {
-    const u16 a = vm_pop(vm);
-    const u16 b = vm_pop(vm);
-    vm_psh(vm, a);
-    vm_psh(vm, b);
+    POP(a)
+    POP(b)
+    PUSH(a)
+    PUSH(b)
     vm->pc++;
     break;
   }
   case VM_ROT:
   {
-    const u16 a = vm_pop(vm);
-    const u16 b = vm_pop(vm);
-    const u16 c = vm_pop(vm);
-    vm_psh(vm, a);
-    vm_psh(vm, c);
-    vm_psh(vm, b);
+    POP(a)
+    POP(b)
+    POP(c)
+    PUSH(a)
+    PUSH(c)
+    PUSH(b)
     vm->pc++;
     break;
   }
   case VM_OVR:
   {
-    const u16 a = vm_pop(vm);
-    const u16 b = vm_pop(vm);
-    vm_psh(vm, b);
-    vm_psh(vm, a);
-    vm_psh(vm, b);
+    POP(a)
+    POP(b)
+    PUSH(b)
+    PUSH(a)
+    PUSH(b)
     vm->pc++;
     break;
   }
-  case VM_ADD:
+  case VM_ADD: { BINARY_OP(+)  break; }
+  case VM_SUB: { BINARY_OP(-)  break; }
+  case VM_MUL: { BINARY_OP(*)  break; }
+  case VM_DIV: { BINARY_OP(/)  break; }
+  case VM_NOT: { UNARY_OP(!)   break; }
+  case VM_AND: { BINARY_OP(&)  break; }
+  case VM_OOR: { BINARY_OP(|)  break; }
+  case VM_SLL: { BINARY_OP(<<) break; }
+  case VM_SRL: { BINARY_OP(>>) break; }
+  case VM_EQU: { BINARY_OP(==) break; }
+  case VM_SLT: { BINARY_OP(<)  break; }
+  case VM_JMP: 
   {
-    const u16 a = vm_pop(vm);
-    const u16 b = vm_pop(vm);
-    vm_psh(vm, b + a);
-    vm->pc++;
-    break;
-  }
-  case VM_SUB:
-  {
-    const u16 a = vm_pop(vm);
-    const u16 b = vm_pop(vm);
-    vm_psh(vm, b - a);
-    vm->pc++;
-    break;
-  }
-  case VM_MUL:
-  {
-    const u16 a = vm_pop(vm);
-    const u16 b = vm_pop(vm);
-    vm_psh(vm, b * a);
-    vm->pc++;
-    break;
-  }
-  case VM_DIV:
-  {
-    const u16 a = vm_pop(vm);
-    const u16 b = vm_pop(vm);
-    vm_psh(vm, b / a);
-    vm->pc++;
-    break;
-  }
-  case VM_NOT:
-  {
-    const u16 a = vm_pop(vm);
-    // vm_psh(vm, a ? 0 : 1);
-    vm_psh(vm, !a);
-    vm->pc++;
-    break;
-  }
-  case VM_AND:
-  {
-    const u16 a = vm_pop(vm);
-    const u16 b = vm_pop(vm);
-    vm_psh(vm, b & a);
-    vm->pc++;
-    break;
-  }
-  case VM_OOR:
-  {
-    const u16 a = vm_pop(vm);
-    const u16 b = vm_pop(vm);
-    vm_psh(vm, b | a);
-    vm->pc++;
-    break;
-  }
-  case VM_SLL:
-  {
-    const u16 a = vm_pop(vm);
-    const u16 b = vm_pop(vm);
-    vm_psh(vm, b << a);
-    vm->pc++;
-    break;
-  }
-  case VM_SRL:
-  {
-    const u16 a = vm_pop(vm);
-    const u16 b = vm_pop(vm);
-    vm_psh(vm, b >> a);
-    vm->pc++;
-    break;
-  }
-  case VM_EQU:
-  {
-    const u16 a = vm_pop(vm);
-    const u16 b = vm_pop(vm);
-    vm_psh(vm, b == a);
-    // vm_psh(vm, b == a ? 1 : 0);
-    vm->pc++;
-    break;
-  }
-  case VM_SLT:
-  {
-    const u16 a = vm_pop(vm);
-    const u16 b = vm_pop(vm);
-    vm_psh(vm, b < a);
-    // vm_psh(vm, b < a ? 1 : 0);
-    vm->pc++;
-    break;
-  }
-  case VM_JMP:
-  {
-    vm->pc = vm_pop(vm);
+    POP(a)
+    vm->pc = a;
     break;
   }
   case VM_JAL:
   {
     const u16 pc = vm->pc;
-    vm->pc = vm_pop(vm);
+    POP(a)
+    vm->pc = a;
     vm_rs_psh(vm, pc + 1);
     break;
   }
   case VM_BRA:
   {
-    const i16 a = vm_pop(vm);
-    const u16 b = vm_pop(vm);
+    POP_SIGNED(a)
+    POP(b)
     vm->pc += b ? a : 1;
     break;
   }
@@ -241,46 +186,48 @@ void vm_step(Vm *vm)
   }
   case VM_LDR:
   {
-    vm_psh(vm, vm_rs_pop(vm));
+    u16 a = vm_rs_pop(vm);
+    PUSH(a)
     vm->pc++;
     break;
   }
   case VM_STR:
   {
-    vm_rs_psh(vm, vm_pop(vm));
+    POP(a)
+    vm_rs_psh(vm, a);
     vm->pc++;
     break;
   }
   case VM_LDW:
   {
-    const u16 a = vm_pop(vm);
-    const u16 v = vm_ldw(vm, a);
-    vm_psh(vm, v);
+    POP(a)
+    u16 v = LOAD_WORD(a);
+    PUSH(v)
     vm->pc++;
     break;
   }
   case VM_STW:
   {
-    const u16 a = vm_pop(vm);
-    const u16 v = vm_pop(vm);
-    vm_stw(vm, a, v);
+    POP(a)
+    POP(v)
+    STORE_WORD(a, v)
     vm->pc++;
     break;
   }
   case VM_DRX:
   {
-    const u16 a = vm_pop(vm);
-    const u16 r = vm_pop(vm);
+    POP(a)
+    POP(r)
     const u16 v = dev_read(vm->dev[a], r);
-    vm_psh(vm, v);
+    PUSH(v)
     vm->pc++;
     break;
   }
   case VM_DTX:
   {
-    const u16 a = vm_pop(vm);
-    const u16 r = vm_pop(vm);
-    const u16 v = vm_pop(vm);
+    POP(a)
+    POP(r)
+    POP(v)
     dev_write(vm->dev[a], r, v);
     vm->pc++;
     break;
@@ -290,4 +237,5 @@ void vm_step(Vm *vm)
     vm->pc++;
     break;
   }
+  // clang-format on
 }
