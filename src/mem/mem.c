@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "mem/mem.h"
-#include "utils/errio.h"
+#include "mem.h"
+#include "../utils/errio.h"
 
 // clang-format off
 #define MEM_EXCEED "WARN: File size [%d bytes] exceeds memory size [%d bytes].\n"
 #define NOT_FOUND  "ERROR: Could not open file [%s].\n"
 // clang-format on
 
-Mem *new_mem(u32 size)
+Mem *mem_new(u32 size)
 {
   Mem *mem = malloc(sizeof(Mem));
   mem->dat = calloc(size, sizeof(u8));
@@ -16,7 +16,7 @@ Mem *new_mem(u32 size)
   return mem;
 }
 
-void free_mem(Mem *mem)
+void mem_free(Mem *mem)
 {
   free(mem->dat);
   free(mem);
@@ -29,6 +29,7 @@ void mem_init(Mem *mem, cstr filename)
   if (img == NULL)
   {
     perrorf(NOT_FOUND, filename);
+    exit(EXIT_FAILURE);
   }
 
   fseek(img, 0, SEEK_END);
@@ -37,7 +38,7 @@ void mem_init(Mem *mem, cstr filename)
   {
     perrorf(MEM_EXCEED, len, mem->len);
     fclose(img);
-    return;
+    exit(EXIT_FAILURE);
   }
 
   rewind(img);

@@ -1,7 +1,6 @@
-#ifndef MEM_H
-#define MEM_H
+#pragma once
 
-#include "utils/types.h"
+#include "../utils/types.h"
 
 /** Maximum size of addressable memory. */
 #define MEM_SIZE_MAX 0xffff
@@ -20,14 +19,14 @@ typedef struct
  * @param size The size of the memory
  *             in bytes.
  */
-extern Mem *new_mem(u32 size);
+Mem *mem_new(u32 size);
 
 /**
  * Frees the allocated memory.
  *
  * @param mem The memory.
  */
-extern void free_mem(Mem *mem);
+void mem_free(Mem *mem);
 
 /**
  * Loads the contents of the binary file into
@@ -36,6 +35,4 @@ extern void free_mem(Mem *mem);
  * @param mem      The memory.
  * @param filename The path to the binary file.
  */
-extern void mem_init(Mem *mem, cstr filename);
-
-#endif
+void mem_init(Mem *mem, cstr filename);

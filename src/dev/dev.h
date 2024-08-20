@@ -1,7 +1,6 @@
-#ifndef DEV_H
-#define DEV_H
+#pragma once
 
-#include "utils/types.h"
+#include "../utils/types.h"
 
 /**
  * Device initialization function. This function will
@@ -98,5 +97,3 @@ extern u16 dev_read(Device *dev, u16 reg);
  * @param val The value to write to the device register.
  */
 extern void dev_write(Device *dev, u16 reg, u16 val);
-
-#endif

@@ -1,8 +1,5 @@
-#ifndef ERRIO_H
-#define ERRIO_H
+#pragma once
 
 #include <stdio.h>
 
 #define perrorf(fmt, ...) fprintf(stderr, fmt, ##__VA_ARGS__)
-
-#endif

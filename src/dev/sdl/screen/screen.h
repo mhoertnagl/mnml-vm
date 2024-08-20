@@ -1,8 +1,7 @@
-#ifndef SCREEN_H
-#define SCREEN_H
+#pragma once
 
 #include <SDL2/SDL.h>
-#include "dev/dev.h"
+#include "../../dev.h"
 
 // clang-format off
 /** 
@@ -74,13 +73,11 @@ typedef struct
  *
  * @returns Pointer to the Screen device.
  */
-extern Screen *new_screen();
+extern Screen *screen_new();
 
 /**
  * Halts and then destroys the screen device.
  *
  * @param screen The screen device.
  */
-extern void free_screen(Screen *screen);
-
-#endif
+extern void screen_free(Screen *screen);

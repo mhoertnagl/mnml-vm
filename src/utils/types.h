@@ -1,5 +1,4 @@
-#ifndef TYPES_H
-#define TYPES_H
+#pragma once
 
 typedef signed char i8;
 typedef unsigned char u8;
@@ -15,5 +14,3 @@ typedef unsigned long long u64;
 
 typedef char *str;
 typedef const char *cstr;
-
-#endif

@@ -1,8 +1,6 @@
-#ifndef NUL_H
-#define NUL_H
+#pragma once
 
-#include "dev/dev.h"
+
+#include "../dev.h"
 
 extern Device dev_nul;
-
-#endif

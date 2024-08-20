@@ -1,8 +1,7 @@
-#ifndef VM_H
-#define VM_H
+#pragma once
 
-#include "mem/mem.h"
-#include "dev/dev.h"
+#include "../mem/mem.h"
+#include "../dev/dev.h"
 
 /** Maximum device address. */
 #define DEV_MAX_ADDR 15
@@ -70,14 +69,12 @@ typedef struct
   // clang-format on
 } Vm;
 
-extern Vm *new_vm();
+Vm *vm_new();
 
-extern void free_vm(Vm *vm);
+void vm_free(Vm *vm);
 
-extern void vm_attach_memory(Vm *vm, Mem *mem);
+void vm_attach_memory(Vm *vm, Mem *mem);
 
-extern void vm_attach_device(Vm *vm, u8 addr, Device *dev);
+void vm_attach_device(Vm *vm, u8 addr, Device *dev);
 
-extern void vm_step(Vm *vm);
-
-#endif
+void vm_step(Vm *vm);

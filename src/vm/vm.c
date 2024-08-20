@@ -2,46 +2,46 @@
 #include <stdlib.h>
 #include "vm.h"
 
-u16 vm_pop(Vm *vm)
+static u16 vm_pop(Vm *vm)
 {
   const u8 l = vm->mem[++vm->sp];
   const u8 h = vm->mem[++vm->sp];
   return (h << 8) | l;
 }
 
-void vm_psh(Vm *vm, u16 v)
+static void vm_psh(Vm *vm, u16 v)
 {
   vm->mem[vm->sp--] = (v >> 8) & 0xff;
   vm->mem[vm->sp--] = v & 0xff;
 }
 
-u16 vm_rs_pop(Vm *vm)
+static u16 vm_rs_pop(Vm *vm)
 {
   const u8 l = vm->mem[++vm->rp];
   const u8 h = vm->mem[++vm->rp];
   return (h << 8) | l;
 }
 
-void vm_rs_psh(Vm *vm, u16 v)
+static void vm_rs_psh(Vm *vm, u16 v)
 {
   vm->mem[vm->rp--] = (v >> 8) & 0xff;
   vm->mem[vm->rp--] = v & 0xff;
 }
 
-u16 vm_ldw(Vm *vm, u16 a)
+static u16 vm_ldw(Vm *vm, u16 a)
 {
   const u8 h = vm->mem[a];
   const u8 l = vm->mem[a + 1];
   return (h << 8) | l;
 }
 
-void vm_stw(Vm *vm, u16 a, u16 v)
+static void vm_stw(Vm *vm, u16 a, u16 v)
 {
   vm->mem[a] = (v >> 8) & 0xff;
   vm->mem[a + 1] = v & 0xff;
 }
 
-Vm *new_vm()
+Vm *vm_new()
 {
   Vm *vm = malloc(sizeof(Vm));
   vm->pc = 0;
@@ -50,7 +50,7 @@ Vm *new_vm()
   return vm;
 }
 
-void free_vm(Vm *vm)
+void vm_free(Vm *vm)
 {
   free(vm);
 }

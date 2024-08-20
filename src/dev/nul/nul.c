@@ -1,7 +1,5 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include "nul.h"
-#include "dev/dev.h"
 
 static u8 boot(Device *dev)
 {
@@ -23,8 +21,9 @@ static void write(Device *dev, u16 reg, u16 value)
 }
 
 Device dev_nul = {
-    .name = "dev/nul",
-    .boot = boot,
-    .halt = halt,
-    .read = read,
-    .write = write};
+  .name = "dev/nul",
+  .boot = (boot_fn)boot,
+  .halt = (halt_fn)halt,
+  .read = (read_fn)read,
+  .write = (write_fn)write
+};

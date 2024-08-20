@@ -1,5 +1,4 @@
-#include <stdlib.h>
-#include "dev/dev.h"
+#include "dev.h"
 
 u8 dev_boot(Device *dev)
 {

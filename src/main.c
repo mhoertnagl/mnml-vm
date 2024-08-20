@@ -8,28 +8,28 @@
 
 int run(cstr filename)
 {
-  Mem *mem = new_mem(MEM_SIZE_MAX);
-  Screen *screen = new_screen();
-  Vm *vm = new_vm();
+  Mem *mem = mem_new(MEM_SIZE_MAX);
+  Screen *screen = screen_new();
+  Vm *vm = vm_new();
 
   mem_init(mem, filename);
-  dev_boot(screen);
+  dev_boot(&screen->dev);
 
   vm_attach_memory(vm, mem);
-  vm_attach_device(vm, 0, screen);
+  vm_attach_device(vm, 0, &screen->dev);
 
-  dev_write(screen, SCREEN_COLOR_RED, 0x00);
-  dev_write(screen, SCREEN_COLOR_GREEN, 0xff);
-  dev_write(screen, SCREEN_COLOR_BLUE, 0x00);
-  dev_write(screen, SCREEN_COLOR_ALPHA, 0xff);
+  dev_write(&screen->dev, SCREEN_COLOR_RED, 0x00);
+  dev_write(&screen->dev, SCREEN_COLOR_GREEN, 0xff);
+  dev_write(&screen->dev, SCREEN_COLOR_BLUE, 0x00);
+  dev_write(&screen->dev, SCREEN_COLOR_ALPHA, 0xff);
 
   for (int i = 0; i < 800; ++i)
   {
-    dev_write(screen, SCREEN_POSITION_X, i);
-    dev_write(screen, SCREEN_POSITION_Y, i);
-    dev_write(screen, SCREEN_DRAW, 0);
+    dev_write(&screen->dev, SCREEN_POSITION_X, i);
+    dev_write(&screen->dev, SCREEN_POSITION_Y, i);
+    dev_write(&screen->dev, SCREEN_DRAW, 0);
   }
-  dev_write(screen, SCREEN_RENDER, 0);
+  dev_write(&screen->dev, SCREEN_RENDER, 0);
 
   SDL_Event e;
   while (1)
@@ -44,9 +44,9 @@ int run(cstr filename)
     vm_step(vm);
   }
 
-  free_screen(screen);
-  free_mem(mem);
-  free_vm(vm);
+  screen_free(screen);
+  mem_free(mem);
+  vm_free(vm);
   SDL_Quit();
 
   return EXIT_SUCCESS;
@@ -54,7 +54,7 @@ int run(cstr filename)
 
 int main(int argc, char **argv)
 {
-  if (argc < 1)
+  if (argc <= 1)
   {
     printf("Usage: %s <filename>\n", argv[0]);
     return EXIT_FAILURE;

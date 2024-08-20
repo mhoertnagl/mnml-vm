@@ -14,8 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef MU_H
-#define MU_H
+#pragma once
 
 #include <stdio.h>
 #include <string.h>
@@ -148,5 +147,3 @@ int main()                                                                   \
   )
 
 // clang-format on
-
-#endif

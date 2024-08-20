@@ -123,15 +123,15 @@ static void screen_write(Screen *screen, u16 reg, u16 val)
   }
 }
 
-Screen *new_screen()
+Screen *screen_new()
 {
   // clang-format off
   Screen *screen    = malloc(sizeof(Screen));
   screen->dev.name  = "dev/sdl/screen";
-  screen->dev.boot  = screen_boot;
-  screen->dev.halt  = screen_halt;
-  screen->dev.read  = screen_read;
-  screen->dev.write = screen_write;
+  screen->dev.boot  = (boot_fn)screen_boot;
+  screen->dev.halt  = (halt_fn)screen_halt;
+  screen->dev.read  = (read_fn)screen_read;
+  screen->dev.write = (write_fn)screen_write;
   screen->window    = NULL;
   screen->renderer  = NULL;
   screen->red       = 0;
@@ -144,7 +144,7 @@ Screen *new_screen()
   return screen;
 }
 
-void free_screen(Screen *screen)
+void screen_free(Screen *screen)
 {
   screen_halt(screen);
   free(screen);
