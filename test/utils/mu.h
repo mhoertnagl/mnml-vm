@@ -1,5 +1,5 @@
 // mu.h - Minimalist unit testing framework.
-// Copyright (C) 2023  Mathias Hörtnagl <mathias.hoertnagl[ÄT]gmail.com>
+// Copyright (C) 2024  Mathias Hörtnagl <mathias.hoertnagl[ÄT]gmail.com>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ int main()                                                                   \
     .tests_failed = 0                                                        \
   };                                                                         \
   printf("\n═══════════════════════════════════════════════════════════\n"); \
-  printf(" µ Unit v1.4\n");                                                  \
+  printf(" µ Unit v1.5\n");                                                  \
   printf("───────────────────────────────────────────────────────────\n");   \
   printf(" Running file %s\n\n", __FILE__);                                  \
   body                                                                       \
@@ -115,19 +115,53 @@ int main()                                                                   \
   if (!(test)) fail(__format, ##args)
 
 /**
- * Asserts that the actual integer is equal
- * to the expected integer or prints a fixed
+ * Asserts that the actual pointer is equal 
+ * to the expected pointer or prints a fixed 
  * message indicating the mismatch. 
  * 
- * @param act The actual integer.
- * @param exp The expected integer.
+ * @param act The actual pointer.
+ * @param exp The expected pointer.
  */
-#define assert_int_equal(act, exp)        \
+#define assert_pointers_equal(act, exp)   \
   assert(                                 \
-    exp == act,                           \
-    "Expected integer [%d] but got [%d]", \
-    exp,                                  \
-    act                                   \
+    (exp) == (act),                       \
+    "Expected pointer [%p] but got [%p]", \
+    (void *)(exp),                        \
+    (void *)(act)                         \
+  )
+
+/**
+ * Asserts that the actual unsigned integer is 
+ * equal to the expected unsigned integer or 
+ * prints a fixed message indicating the 
+ * mismatch. 
+ * 
+ * @param act The actual unsigned integer.
+ * @param exp The expected unsigned integer.
+ */
+#define assert_unsigned_equal(act, exp)      \
+  assert(                                    \
+    (unsigned long)(exp) == (unsigned long)(act),                          \
+    "Expected unsigned [%lu] but got [%lu]", \
+    (unsigned long)(exp),                    \
+    (unsigned long)(act)                     \
+  )
+
+/**
+ * Asserts that the actual signed integer is 
+ * equal to the expected signed integer or 
+ * prints a fixed message indicating the 
+ * mismatch. 
+ * 
+ * @param act The actual signed integer.
+ * @param exp The expected signed integer.
+ */
+#define assert_signed_equal(act, exp)      \
+  assert(                                  \
+    (signed long)(exp) == (signed long)(act),                        \
+    "Expected signed [%ld] but got [%ld]", \
+    (signed long)(exp),                    \
+    (signed long)(act)                     \
   )
 
 /**

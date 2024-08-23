@@ -59,4 +59,6 @@ typedef struct {
   u64 mem[MEMORY_SIZE];
 } Vm;
 
+extern Vm vm;
+
 VmResult vm_run(u8 *code);

@@ -32,7 +32,7 @@
 #define BINOPI(op) u64 r = POPD(); PEEKD() op##= r
 #define BINOP(op)  u64 r = POPD(); PEEKD() = PEEKD() op r
 
-static Vm vm;
+Vm vm;
 
 VmResult vm_run(u8 *code) {
   vm.ip = code;
