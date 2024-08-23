@@ -3,7 +3,14 @@
     "*.h": "c"
   },
   "cSpell.words": [
+    "BINOP",
+    "BINOPI",
     "mnml",
-    "perrorf"
+    "PEEKD",
+    "perrorf",
+    "POPD",
+    "POPR",
+    "PUSHD",
+    "PUSHR"
   ],
 }

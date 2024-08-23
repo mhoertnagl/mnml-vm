@@ -15,7 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 CC = clang
-CFLAGS = -std=c17 -g -Wall
+CFLAGS = -std=c17 -O3 -g -Wall
 MNML_AS = ../mnml-as/build/mnml-as
 
 # Binary
