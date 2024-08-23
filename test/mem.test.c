@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 mu_unit({
+  
   test("Initialize memory with /files/01.as", {
     uint8_t *code = mem_load("./test/files/01.vm");
     assert_int_equal(code[ 0], OP_PSH);

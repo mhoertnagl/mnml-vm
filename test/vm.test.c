@@ -6,6 +6,7 @@
 extern Vm vm;
 
 mu_unit({
+  
   test("Run /files/add.vm", {
     uint8_t *code = mem_load("./test/files/add.vm");
 
