@@ -1,3 +1,0 @@
-psh 0xffff
-psh 0x00ff
-sub
