@@ -1,3 +1,4 @@
 psh 0x1234
 psh 0x2345
 add
+hlt

@@ -17,7 +17,7 @@ typedef enum {
 
 typedef enum {
   OP_PSH,
-  // OP_DUP,
+  OP_DUP,
   // OP_LDI,
   // OP_STI,
   OP_LDW,
