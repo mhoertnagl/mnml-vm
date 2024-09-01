@@ -43,7 +43,8 @@ VmResult vm_run(u8 *code) {
     // switch (NEXT_OP() & 0x1f) {
     switch (NEXT_OP()) {
       case OP_PSH:  { PUSHD(NEXT_ARG()); break; } 
-      case OP_DUP:  { PUSHD(PEEKD()); break; }
+      // case OP_POP:  { POPD(); break; }
+      // case OP_DUP:  { PUSHD(PEEKD()); break; }
       // case OP_LDW: { PEEKD() = vm.mem[PEEKD()]; break; }
       // case OP_STW: { u64 v = POPD(); u64 a = POPD(); vm.mem[a] = v; break; }
       case OP_ADD:  { BINOPI(+); break; }
