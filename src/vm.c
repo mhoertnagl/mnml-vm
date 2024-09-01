@@ -57,7 +57,7 @@ VmResult vm_run(u8 *code) {
       case OP_LT:   { BINOP(<);  break; }
       case OP_LE:   { BINOP(<=); break; }
       case OP_JMP:  { vm.ip = code + PEEK_ARG(); break; }
-      case OP_JNZ:  { 
+      case OP_JEZ:  { 
         u64 offset = NEXT_ARG(); 
         if (!POPD()) vm.ip = code + offset; 
         break; 

@@ -38,7 +38,7 @@ typedef enum {
   OP_LT,
   OP_LE,
   OP_JMP,
-  OP_JNZ,
+  OP_JEZ,
   // OP_JEQ,
   OP_CALL,
   OP_RET,
