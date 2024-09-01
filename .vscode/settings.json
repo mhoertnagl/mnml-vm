@@ -6,11 +6,17 @@
     "BINOP",
     "BINOPI",
     "mnml",
+    "PEEKC",
     "PEEKD",
     "perrorf",
+    "POPC",
     "POPD",
     "POPR",
+    "POPV",
+    "PSHV",
+    "PUSHC",
     "PUSHD",
-    "PUSHR"
+    "PUSHR",
+    "PUSHV"
   ],
 }
